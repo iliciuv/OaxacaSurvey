@@ -7,7 +7,7 @@
 #' @param data A data frame containing the variables in the formula, group, and weights.
 #' @param group A character string: the name of the binary group variable in the data. 1 for the first group, and 0 for the second group.
 #' @param weights A character string: the name of the weights variable in the data.
-#' @param R An integer: the number of bootstrap replicates. Default is 1000.
+#' @param iters An integer: the number of bootstrap replicates. Default is 1000.
 #'
 #' @return A list containing the mean and confidence intervals for endowments, coefficients, and interaction components.
 #' @examples
@@ -16,11 +16,11 @@
 #' result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 1000)
 #' }
 #' @export
-oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000) {
+oaxaca_blinder_svy <- function(formula, data, group, weights, iters) {
   # Bootstrap for confidence intervals
   bootstrap_results <- resample::bootstrap(data, function(data, indices) {
     decompose_core(data, indices, formula, weights, group)
-  }, R = R)
+  }, R = iters)
 
   # Extract results: mean and CI
   results_mean <- colMeans(bootstrap_results)
