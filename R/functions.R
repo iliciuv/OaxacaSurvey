@@ -41,12 +41,12 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000) {
     return(c(endowments, coefficients, interaction))
   }
 
-# Bootstrap for confidence intervals
-bootstrap_results <- resample::bootstrap(data, decompose_core, R=R)
+  # Bootstrap for confidence intervals
+  bootstrap_results <- resample::bootstrap(data, decompose_core, R = R)
 
-# Extract results: mean and CI
-results_mean <- colMeans(bootstrap_results)
-results_ci <- t(apply(bootstrap_results, 2, function(x) quantile(x, c(0.025, 0.975))))
+  # Extract results: mean and CI
+  results_mean <- colMeans(bootstrap_results)
+  results_ci <- t(apply(bootstrap_results, 2, function(x) quantile(x, c(0.025, 0.975))))
 
 
   list(
