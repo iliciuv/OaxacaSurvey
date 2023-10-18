@@ -36,13 +36,16 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000) {
 
 decompose_core <- function(data, indices, formula, weights, group) {
   data_bootstrap <- data[indices, ]
-  data1 <- subset(data_bootstrap, group == 1)
-  data2 <- subset(data_bootstrap, group == 0)
-  # Adjust weights for the bootstrap sample
-  data_bootstrap$w <- ifelse(!is.na(data_bootstrap$w), data_bootstrap$w, 0)
 
-  des1 <- survey::svydesign(ids = ~1, data = data1, weights = weights)
-  des2 <- survey::svydesign(ids = ~1, data = data2, weights = weights)
+  # Adjust weights for the bootstrap sample
+  data_bootstrap[[weights]] <- ifelse(!is.na(data_bootstrap[[weights]]), data_bootstrap[[weights]], 0)
+
+  data1 <- subset(data_bootstrap, data_bootstrap[[group]] == 1)
+  data2 <- subset(data_bootstrap, data_bootstrap[[group]] == 0)
+
+  des1 <- survey::svydesign(ids = ~1, data = data1, weights = ~ data1[[weights]])
+  des2 <- survey::svydesign(ids = ~1, data = data2, weights = ~ data2[[weights]])
+
 
   model1 <- survey::svyglm(formula, design = des1)
   model2 <- survey::svyglm(formula, design = des2)
