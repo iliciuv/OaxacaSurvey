@@ -3,7 +3,7 @@
 # Load required packages
 library(survey)
 library(resample)
-# If you've saved the functions in another script, source that script here, otherwise, ensure the functions are loaded in the environment.
+library(OaxacaSurvey)
 
 # Set seed for replicability
 set.seed(123)
