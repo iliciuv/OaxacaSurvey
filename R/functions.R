@@ -42,7 +42,7 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000) {
   }
 
   # Bootstrap for confidence intervals
-  bootstrap_results <- resample::bootstrap(data, decompose_core, R = R)
+  bootstrap_results <- resample::bootstrap(data, decompose_core, R = R, environment = environment())
 
   # Extract results: mean and CI
   results_mean <- colMeans(bootstrap_results)
