@@ -4,11 +4,10 @@ Title: Survey weights computed for Oaxaca-Blinder decompositions.
 Version: 0.1.0
 Author: Miguel Garcia-Duch
 Maintainer: Miguel Garcia-Duch <miguel.garcia.duch@gmail.com>
-Description: Enabling estimating restricted and unrestricted Error Correction Models (ECM) and performing Pesaran(2001) Bounds-F test for cointegration within systemfit objects/models.
+Description: Enabling estimation of models considering sampling weights.
 License: GPL-3
 Encoding: UTF-8
 Imports:
   survey,
-  BH,
-  roxygen2
-RoxygenNote: 7.2.3
+  resample
+  RoxygenNote: 7.2.3

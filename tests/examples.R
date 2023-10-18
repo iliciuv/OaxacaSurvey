@@ -2,8 +2,7 @@
 
 # Load required packages
 library(survey)
-library(BH)
-library(OaxacaSurvey)
+library(resample)
 
 # Source the oaxaca_blinder_svy function here if it's not already loaded
 
