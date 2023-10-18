@@ -23,7 +23,7 @@ data <- data.frame(
 data$y[data$group == 1] <- data$y[data$group == 1] + 0.5
 
 # Testing the function
-result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = data$w, iters = 500)
+result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 500)
 
 # Print the results
 print(result)

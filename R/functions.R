@@ -38,6 +38,8 @@ decompose_core <- function(data, indices, formula, weights, group) {
   data_bootstrap <- data[indices, ]
   data1 <- subset(data_bootstrap, group == 1)
   data2 <- subset(data_bootstrap, group == 0)
+  # Adjust weights for the bootstrap sample
+  data_bootstrap$w <- ifelse(!is.na(data_bootstrap$w), data_bootstrap$w, 0)
 
   des1 <- survey::svydesign(ids = ~1, data = data1, weights = weights)
   des2 <- survey::svydesign(ids = ~1, data = data2, weights = weights)
