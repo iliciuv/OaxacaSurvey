@@ -7,7 +7,7 @@
 #' @param data A data frame containing the variables in the formula, group, and weights.
 #' @param group A character string: the name of the binary group variable in the data. 1 for the first group, and 0 for the second group.
 #' @param weights A character string: the name of the weights variable in the data.
-#' @param iters An integer: the number of bootstrap replicates. Default is 1000.
+#' @param R An integer: the number of bootstrap replicates. Default is 1000.
 #'
 #' @return A list containing the mean and confidence intervals for endowments, coefficients, and interaction components.
 #' @examples
@@ -16,11 +16,11 @@
 #' result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 1000)
 #' }
 #' @export
-oaxaca_blinder_svy <- function(formula, data, group, weights, iters) {
+oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000) {
   # Bootstrap for confidence intervals
   bootstrap_results <- resample::bootstrap(data, function(data, indices) {
     decompose_core(data, indices, formula, weights, group)
-  }, R = iters)
+  }, R = R)
 
   # Extract results: mean and CI
   results_mean <- colMeans(bootstrap_results)
@@ -36,19 +36,19 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, iters) {
 
 decompose_core <- function(data, indices, formula, weights, group) {
   data_bootstrap <- data[indices, ]
-  data1 <- subset(data_bootstrap, group == 1)
-  data2 <- subset(data_bootstrap, group == 0)
+  data1 <- subset(data_bootstrap, get(group) == 1)
+  data2 <- subset(data_bootstrap, get(group) == 0)
   # Adjust weights for the bootstrap sample
   data_bootstrap$w <- ifelse(!is.na(data_bootstrap$w), data_bootstrap$w, 0)
 
-  des1 <- survey::svydesign(ids = ~1, data = data1, weights = weights)
-  des2 <- survey::svydesign(ids = ~1, data = data2, weights = weights)
+  des1 <- survey::svydesign(ids = ~1, data = data1, weights = get(weights))
+  des2 <- survey::svydesign(ids = ~1, data = data2, weights = get(weights))
 
   model1 <- survey::svyglm(formula, design = des1)
   model2 <- survey::svyglm(formula, design = des2)
 
-  meanY1 <- survey::svytotal(~response, design = des1) / survey::svytotal(weights, design = des1)
-  meanY2 <- survey::svytotal(~response, design = des2) / survey::svytotal(weights, design = des2)
+  meanY1 <- survey::svytotal(~response, design = des1) / survey::svytotal(get(weights), design = des1)
+  meanY2 <- survey::svytotal(~response, design = des2) / survey::svytotal(get(weights), design = des2)
 
   diff <- meanY1 - meanY2
 
