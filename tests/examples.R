@@ -4,7 +4,6 @@ library(survey)
 library(BH)
 
 #' Oaxaca-Blinder Decomposition with Bootstrap Confidence Intervals using svyglm
-#'
 #' @param formula An object of class formula: the model formula.
 #' @param data A data frame containing the variables in the formula, group, and weights.
 #' @param group A character string: the name of the binary group variable in the data. 1 for the first group, and 0 for the second group.
@@ -12,7 +11,6 @@ library(BH)
 #' @param R An integer: the number of bootstrap replicates. Default is 1000.
 #'
 #' @return A list containing the mean and confidence intervals for endowments, coefficients, and interaction components.
-#'
 #' @examples
 #' \dontrun{
 #' # Assuming a dataset 'data' with response 'y', predictors 'x1' and 'x2', a binary group 'group', and weights 'w'

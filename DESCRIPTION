@@ -8,7 +8,7 @@ Description: Enabling estimating restricted and unrestricted Error Correction Mo
 License: GPL-3
 Encoding: UTF-8
 Imports:
- survey,
- BH
-  RoxygenNote: 7.2.3
+  survey,
+  BH,
+  roxygen2
 RoxygenNote: 7.2.3
