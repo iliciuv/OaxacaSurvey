@@ -3,12 +3,7 @@ an r test package implementing the oaxaca-blinder decomposition for survey objec
 
 
 ### Important
-To install deprecated package boost download source from: https://cran.r-project.org/src/contrib/Archive/boost/
-
-And then, pointing to the directory containing the file install it with:
-
-```r
-
-install.packages("/home/other/dev/open-source-collab/OaxacaSurvey/dep/boost_1.0-0.tar.gz", type="source")
-
-```r
+The Decomposition computed is the so-called "triple":
+  - Endowments
+  - Coefficients
+  - Interactions
