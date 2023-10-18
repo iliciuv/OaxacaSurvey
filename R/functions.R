@@ -1,5 +1,7 @@
+# Beta module OaxacaSurvey
+
 library(survey)
-library(boot)
+library(BH)
 
 #' Oaxaca-Blinder Decomposition with Bootstrap Confidence Intervals using svyglm
 #'
@@ -10,14 +12,14 @@ library(boot)
 #' @param R An integer: the number of bootstrap replicates. Default is 1000.
 #'
 #' @return A list containing the mean and confidence intervals for endowments, coefficients, and interaction components.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' # Assuming a dataset 'data' with response 'y', predictors 'x1' and 'x2', a binary group 'group', and weights 'w'
 #' result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 1000)
 #' }
 oaxaca_blinder_svy <- function(formula, data, group, weights, R=1000) {
-  
+
   # Core decomposition function for bootstrapping
   decompose_core <- function(data, indices) {
     data_bootstrap <- data[indices, ]
@@ -41,10 +43,10 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R=1000) {
 
     return(c(endowments, coefficients, interaction))
   }
-  
+
   # Bootstrap for confidence intervals
   results <- boot(data=data, statistic=decompose_core, R=R)
-  
+
   # Extract results: mean and CI
   results_mean <- apply(results$t, 2, mean)
   results_ci <- t(apply(results$t, 2, function(x) quantile(x, c(0.025, 0.975))))
@@ -56,4 +58,3 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R=1000) {
     )
   )
 }
-
