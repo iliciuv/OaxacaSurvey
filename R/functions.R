@@ -27,9 +27,13 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000) {
   results_ci <- t(apply(bootstrap_results, 2, function(x) quantile(x, c(0.025, 0.975))))
 
   list(
-    endowments = results_mean[1], coefficients = results_mean[2], interaction = results_mean[3],
+    endowments = results_mean[1],
+    coefficients = results_mean[2],
+    interaction = results_mean[3],
     ci = list(
-      endowments = results_ci[1, ], coefficients = results_ci[2, ], interaction = results_ci[3, ]
+      endowments = results_ci[1, ],
+      coefficients = results_ci[2, ],
+      interaction = results_ci[3, ]
     )
   )
 }
@@ -53,7 +57,11 @@ decompose_core <- function(data, indices, formula, weights, group) {
   meanY1 <- survey::svytotal(~response, design = des1) / survey::svytotal(weights, design = des1)
   meanY2 <- survey::svytotal(~response, design = des2) / survey::svytotal(weights, design = des2)
 
-  diff <- meanY1 - meanY2
+
+
+  diff <- meanY1[[1]] - meanY2[[1]]
+
+
 
   endowments <- as.numeric(coef(model2)[-1] %*% (predict(model1, type = "response", newdata = data2) - predict(model1, type = "response", newdata = data1)))
   coefficients <- as.numeric(coef(model1)[-1] %*% predict(model2, type = "response", newdata = data1))
