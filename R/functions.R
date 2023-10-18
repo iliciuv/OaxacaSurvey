@@ -10,12 +10,12 @@
 #' @param R An integer: the number of bootstrap replicates. Default is 1000.
 #'
 #' @return A list containing the mean and confidence intervals for endowments, coefficients, and interaction components.
-#' @export
 #' @examples
 #' \dontrun{
 #' # Assuming a dataset 'data' with response 'y', predictors 'x1' and 'x2', a binary group 'group', and weights 'w'
 #' result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 1000)
 #' }
+#' @export
 oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000) {
   # Bootstrap for confidence intervals
   bootstrap_results <- resample::bootstrap(data, function(data, indices) {
