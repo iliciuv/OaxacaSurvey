@@ -1,10 +1,9 @@
-# Example usage package OaxacaSurvey
+# Example usage of OaxacaSurvey
 
 # Load required packages
 library(survey)
 library(resample)
-
-# Source the oaxaca_blinder_svy function here if it's not already loaded
+# If you've saved the functions in another script, source that script here, otherwise, ensure the functions are loaded in the environment.
 
 # Set seed for replicability
 set.seed(123)

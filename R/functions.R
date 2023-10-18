@@ -17,37 +17,14 @@
 #' result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 1000)
 #' }
 oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000) {
-  # Core decomposition function for bootstrapping
-  decompose_core <- function(data, indices) {
-    data_bootstrap <- data[indices, ]
-    data1 <- subset(data_bootstrap, get(group) == 1)
-    data2 <- subset(data_bootstrap, get(group) == 0)
-
-    des1 <- survey::svydesign(ids = ~1, data = data1, weights = get(weights))
-    des2 <- survey::svydesign(ids = ~1, data = data2, weights = get(weights))
-
-    model1 <- survey::svyglm(formula, design = des1)
-    model2 <- survey::svyglm(formula, design = des2)
-
-    meanY1 <- survey::svytotal(~response, design = des1) / survey::svytotal(get(weights), design = des1)
-    meanY2 <- survey::svytotal(~response, design = des2) / survey::svytotal(get(weights), design = des2)
-
-    diff <- meanY1 - meanY2
-
-    endowments <- as.numeric(coef(model2)[-1] %*% (predict(model1, type = "response", newdata = data2) - predict(model1, type = "response", newdata = data1)))
-    coefficients <- as.numeric(coef(model1)[-1] %*% predict(model2, type = "response", newdata = data1))
-    interaction <- diff - endowments - coefficients
-
-    return(c(endowments, coefficients, interaction))
-  }
-
   # Bootstrap for confidence intervals
-  bootstrap_results <- resample::bootstrap(data, decompose_core, R = R, environment = environment())
+  bootstrap_results <- resample::bootstrap(data, function(data, indices) {
+    decompose_core(data, indices, formula, weights, group)
+  }, R = R)
 
   # Extract results: mean and CI
   results_mean <- colMeans(bootstrap_results)
   results_ci <- t(apply(bootstrap_results, 2, function(x) quantile(x, c(0.025, 0.975))))
-
 
   list(
     endowments = results_mean[1], coefficients = results_mean[2], interaction = results_mean[3],
@@ -55,4 +32,27 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000) {
       endowments = results_ci[1, ], coefficients = results_ci[2, ], interaction = results_ci[3, ]
     )
   )
+}
+
+decompose_core <- function(data, indices, formula, weights, group) {
+  data_bootstrap <- data[indices, ]
+  data1 <- subset(data_bootstrap, get(group) == 1)
+  data2 <- subset(data_bootstrap, get(group) == 0)
+
+  des1 <- survey::svydesign(ids = ~1, data = data1, weights = get(weights))
+  des2 <- survey::svydesign(ids = ~1, data = data2, weights = get(weights))
+
+  model1 <- survey::svyglm(formula, design = des1)
+  model2 <- survey::svyglm(formula, design = des2)
+
+  meanY1 <- survey::svytotal(~response, design = des1) / survey::svytotal(get(weights), design = des1)
+  meanY2 <- survey::svytotal(~response, design = des2) / survey::svytotal(get(weights), design = des2)
+
+  diff <- meanY1 - meanY2
+
+  endowments <- as.numeric(coef(model2)[-1] %*% (predict(model1, type = "response", newdata = data2) - predict(model1, type = "response", newdata = data1)))
+  coefficients <- as.numeric(coef(model1)[-1] %*% predict(model2, type = "response", newdata = data1))
+  interaction <- diff - endowments - coefficients
+
+  return(c(endowments, coefficients, interaction))
 }
