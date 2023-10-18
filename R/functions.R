@@ -39,14 +39,14 @@ decompose_core <- function(data, indices, formula, weights, group) {
   data1 <- subset(data_bootstrap, group == 1)
   data2 <- subset(data_bootstrap, group == 0)
 
-  des1 <- survey::svydesign(ids = ~1, data = data1, weights = get(weights))
-  des2 <- survey::svydesign(ids = ~1, data = data2, weights = get(weights))
+  des1 <- survey::svydesign(ids = ~1, data = data1, weights = weights)
+  des2 <- survey::svydesign(ids = ~1, data = data2, weights = weights)
 
   model1 <- survey::svyglm(formula, design = des1)
   model2 <- survey::svyglm(formula, design = des2)
 
-  meanY1 <- survey::svytotal(~response, design = des1) / survey::svytotal(get(weights), design = des1)
-  meanY2 <- survey::svytotal(~response, design = des2) / survey::svytotal(get(weights), design = des2)
+  meanY1 <- survey::svytotal(~response, design = des1) / survey::svytotal(weights, design = des1)
+  meanY2 <- survey::svytotal(~response, design = des2) / survey::svytotal(weights, design = des2)
 
   diff <- meanY1 - meanY2
 
