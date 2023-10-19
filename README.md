@@ -60,3 +60,8 @@ Where:
 - $\hat{\beta}_1$ and $\hat{\beta}_0$ are the estimated coefficients for group 1 and group 0, respectively.
 
 The three terms on the right side represent the contributions from differences in endowments (E), coefficients (C), and interaction effects (I).
+
+--------------------------------------------------
+--------------------------------------------------
+
+## Pending implementations
