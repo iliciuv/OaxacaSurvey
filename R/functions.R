@@ -44,7 +44,7 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
     interaction <-
       sum((coef(model2)[-1] - coef(model1)[-1]) * (colMeans(des2$variables[-1]) - colMeans(des1$variables[-1])))
 
-    # Return decomposition and bootestraped confidence intervals
+    # Return decomposition (internal)
     return(c(endowments, coefficients, interaction))
   }
 
@@ -63,5 +63,6 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
     coefficients = list(value = mean(boot.result$t[, 2]), CI = c(ci.lower[2], ci.upper[2])),
     interaction = list(value = mean(boot.result$t[, 3]), CI = c(ci.lower[3], ci.upper[3]))
   )
+  # Return to  the user decomposition and bootestraped confidence intervals
   return(result)
 }
