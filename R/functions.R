@@ -17,7 +17,8 @@
 #' result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 1000)
 #' }
 #' @export
-oaxaca_blinder_svy <- function(formula, data, group, weights,  R = 1000, conf.level = 0.95) {
+oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.level = 0.95) {
+
   # Oaxaca-Blinder Decomposition on a single dataset
   single_decomposition <- function(data, indices) {
     data <- data[indices, ] # obtain the bootstrapped sample
@@ -29,27 +30,27 @@ oaxaca_blinder_svy <- function(formula, data, group, weights,  R = 1000, conf.le
     data1 <- data[data[[group]] == 1, ]
     data2 <- data[data[[group]] == 0, ]
 
-    des1 <- svydesign(ids = ~1, data = data1, weights = ~ data1[[weights]])
-    des2 <- svydesign(ids = ~1, data = data2, weights = ~ data2[[weights]])
+    des1 <- survey::svydesign(ids = ~1, data = data1, weights = ~ data1[[weights]])
+    des2 <- survey::svydesign(ids = ~1, data = data2, weights = ~ data2[[weights]])
 
-    model1 <- svyglm(formula, design = des1)
-    model2 <- svyglm(formula, design = des2)
+    model1 <- survey::svyglm(formula, design = des1)
+    model2 <- survey::svyglm(formula, design = des2)
 
-# Extract decomposition
+    # Extract decomposition
     endowments <-
-    sum(coef(model1)[-1] * (colMeans(des2$variables[-1]) - colMeans(des1$variables[-1])))
+      sum(coef(model1)[-1] * (colMeans(des2$variables[-1]) - colMeans(des1$variables[-1])))
     coefficients <-
-    sum((coef(model2)[-1] - coef(model1)[-1]) * colMeans(des1$variables[-1]))
+      sum((coef(model2)[-1] - coef(model1)[-1]) * colMeans(des1$variables[-1]))
     interaction <-
-    sum((coef(model2)[-1] - coef(model1)[-1]) * (colMeans(des2$variables[-1]) - colMeans(des1$variables[-1])))
+      sum((coef(model2)[-1] - coef(model1)[-1]) * (colMeans(des2$variables[-1]) - colMeans(des1$variables[-1])))
 
-# Return decomposition and bootestraped confidence intervals
+    # Return decomposition and bootestraped confidence intervals
     return(c(endowments, coefficients, interaction))
   }
 
   # Bootstrap
   set.seed(123) # for reproducibility
-  boot.result <- boot(data = data, statistic = single_decomposition, R = R)
+  boot.result <- boot::boot(data = data, statistic = single_decomposition, R = R)
 
   # Compute Confidence Intervals
   alpha <- 1 - conf.level
