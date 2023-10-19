@@ -54,18 +54,18 @@ decompose_core <- function(data, indices, formula, weights, group) {
   model2 <- survey::svyglm(formula, design = des2)
 
   lhs <- all.vars(formula)[1]
-  meanY1 <- survey::svytotal(as.formula(paste0("~", lhs)), design=des1) / survey::svytotal(as.formula(paste0("~", data1[[weights]])), design=des1)
-  meanY2 <- survey::svytotal(as.formula(paste0("~", lhs)), design=des2) / survey::svytotal(as.formula(paste0("~", data2[[weights]])), design=des2)
+  meanY1 <- survey::svytotal(as.formula(paste0("~", lhs)), design = des1) / survey::svytotal(as.formula(paste0("~", data1[[weights]])), design = des1)
+  meanY2 <- survey::svytotal(as.formula(paste0("~", lhs)), design = des2) / survey::svytotal(as.formula(paste0("~", data2[[weights]])), design = des2)
 
   diff <- meanY1[[1]] - meanY2[[1]]
 
- predicted1 <- predict(model1, type="response", newdata=data1)
-predicted2 <- predict(model1, type="response", newdata=data2)
-avg_predicted_diff <- mean(predicted2) - mean(predicted1)
+  predicted1 <- predict(model1, type = "response", newdata = data1)
+  predicted2 <- predict(model1, type = "response", newdata = data2)
+  avg_predicted_diff <- mean(predicted2) - mean(predicted1)
 
 
-endowments <- sum(coef(model2)[-1]) * avg_predicted_diff
-  coefficients <- sum(coef(model1)[-1] * predict(model2, type="response", newdata=data1))
+  endowments <- sum(coef(model2)[-1]) * avg_predicted_diff
+  coefficients <- sum(coef(model1)[-1] * predict(model2, type = "response", newdata = data1))
   interaction <- diff - endowments - coefficients
 
   return(c(endowments, coefficients, interaction))
