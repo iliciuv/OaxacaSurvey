@@ -2,15 +2,15 @@
 
 # Load required packages
 library(survey)
-library(resample)
+library(boot)
 library(OaxacaSurvey)
 
-# Set seed for replicability
+# Simulated sample size
+n <- 1000
+# Ensure reproductibility
 set.seed(123)
 
-# Simulate some data
-n <- 1000
-
+# Define data object simulating a suvey with sampling weigths (variable w)
 data <- data.frame(
   y = rnorm(n),
   x1 = rnorm(n),
@@ -19,11 +19,8 @@ data <- data.frame(
   w = round(runif(n, 1, 5))
 )
 
-# Add some effect for group
-data$y[data$group == 1] <- data$y[data$group == 1] + 0.5
+# Apply "oaxaca_blinder_svy" function to simulated data
+result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w")
 
-# Testing the function
-result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 500)
-
-# Print the results
+# Return Oaxaca-Blinder decomposition with bootestraped CI
 print(result)

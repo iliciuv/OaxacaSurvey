@@ -1,38 +1,55 @@
 library(survey)
-library(magrittr)
+library(boot)
 
-# Oaxaca-Blinder Decomposition using svyglm
-oaxaca_blinder_svy <- function(formula, data, group, weights, subset=NULL) {
-  # Split the data into two groups
-  data1 <- data[data[[group]] == 1, ]
-  data2 <- data[data[[group]] == 0, ]
+oaxaca_blinder_svy <- function(formula, data, group, weights,  R = 1000, conf.level = 0.95) {
+  # Oaxaca-Blinder Decomposition on a single dataset
+  single_decomposition <- function(data, indices) {
+    data <- data[indices, ] # obtain the bootstrapped sample
+    return(oaxaca_blinder_core(data, formula, group, weights))
+  }
 
-  # Define survey designs
-  des1 <- svydesign(ids = ~1, data = data1, weights = ~data1[[weights]])
-  des2 <- svydesign(ids = ~1, data = data2, weights = ~data2[[weights]])
+  # Core function without bootstrapping
+  oaxaca_blinder_core <- function(data, formula, group, weights) {
+    data1 <- data[data[[group]] == 1, ]
+    data2 <- data[data[[group]] == 0, ]
 
-  # Fit models
-  model1 <- svyglm(formula, design = des1)
-  model2 <- svyglm(formula, design = des2)
+    des1 <- svydesign(ids = ~1, data = data1, weights = ~ data1[[weights]])
+    des2 <- svydesign(ids = ~1, data = data2, weights = ~ data2[[weights]])
 
-  # Average outcomes
-  lhs <- all.vars(formula)[1]
-  meanY1 <- svytotal(as.formula(paste0("~", lhs)), design=des1) / svytotal(~data1[[weights]], design=des1)
-  meanY2 <- svytotal(as.formula(paste0("~", lhs)), design=des2) / svytotal(~data2[[weights]], design=des2)
+    model1 <- svyglm(formula, design = des1)
+    model2 <- svyglm(formula, design = des2)
 
-  diff <- meanY1 - meanY2
+# Extract decomposition
+    endowments <-
+    sum(coef(model1)[-1] * (colMeans(des2$variables[-1]) - colMeans(des1$variables[-1])))
+    coefficients <-
+    sum((coef(model2)[-1] - coef(model1)[-1]) * colMeans(des1$variables[-1]))
+    interaction <-
+    sum((coef(model2)[-1] - coef(model1)[-1]) * (colMeans(des2$variables[-1]) - colMeans(des1$variables[-1])))
 
-  # Decomposition
-  predicted_diff <- predict(model1, type="response", newdata=data2) - predict(model1, type="response", newdata=data1)
+# Return decomposition and bootestraped confidence intervals
+    return(c(endowments, coefficients, interaction))
+  }
 
-  # Use the first element of the predicted difference since it's a vector
-  endowments <- sum(coef(model2)[-1] * predicted_diff[1])
+  # Bootstrap
+  set.seed(123) # for reproducibility
+  boot.result <- boot(data = data, statistic = single_decomposition, R = R)
 
-  coefficients <- sum(coef(model1)[-1] * predict(model2, type="response", newdata=data1))
-  interaction <- diff - endowments - coefficients
+  # Compute Confidence Intervals
+  alpha <- 1 - conf.level
+  ci.lower <- apply(boot.result$t, 2, function(x) quantile(x, alpha / 2))
+  ci.upper <- apply(boot.result$t, 2, function(x) quantile(x, 1 - alpha / 2))
 
-  return(list(endowments = endowments, coefficients = coefficients, interaction = interaction))
+  # Return results as a list
+  result <- list(
+    endowments = list(value = mean(boot.result$t[, 1]), CI = c(ci.lower[1], ci.upper[1])),
+    coefficients = list(value = mean(boot.result$t[, 2]), CI = c(ci.lower[2], ci.upper[2])),
+    interaction = list(value = mean(boot.result$t[, 3]), CI = c(ci.lower[3], ci.upper[3]))
+  )
+  return(result)
 }
+
+############################ Test code ############################
 
 # Test the function
 n <- 1000
