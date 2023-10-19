@@ -59,9 +59,12 @@ decompose_core <- function(data, indices, formula, weights, group) {
 
   diff <- meanY1[[1]] - meanY2[[1]]
 
-  predicted_diff <- predict(model1, type="response", newdata=data2) - predict(model1, type="response", newdata=data1)
+ predicted1 <- predict(model1, type="response", newdata=data1)
+predicted2 <- predict(model1, type="response", newdata=data2)
+avg_predicted_diff <- mean(predicted2) - mean(predicted1)
 
-  endowments <- sum(coef(model2)[-1] * predicted_diff[1])
+
+endowments <- sum(coef(model2)[-1]) * avg_predicted_diff
   coefficients <- sum(coef(model1)[-1] * predict(model2, type="response", newdata=data1))
   interaction <- diff - endowments - coefficients
 
