@@ -9,7 +9,7 @@ oaxaca_blinder_svy(formula, data, group, weights, R = 1000, conf.level = 0.95)
 \arguments{
 \item{formula}{An object of class formula: the model formula.}
 
-\item{data}{A data frame containing the variables in the formula, group, and weights.}
+\item{data}{A data frame: containing the variables in the formula, group, and weights.}
 
 \item{group}{A character string: the name of the binary group variable in the data. 1 for the first group, and 0 for the second group.}
 
