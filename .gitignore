@@ -1,2 +1,3 @@
 .lintr
 tests/origin.R
+tests/origin2.R
