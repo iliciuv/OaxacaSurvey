@@ -15,7 +15,14 @@ Install latest version from:
 devtools::install_github("iliciuv/OaxacaSurvey)
 ```
 
-The only implemented method to perform the decomposition is *oaxaca_blinder_svy*.
+The only implemented method to perform the decomposition is *oaxaca_blinder_svy*. It performs Oaxaca-Blinder decomposition for 2 groups of controls from a survey with sampling weigths. The function uses the following parameters:
+
+- **@param formula** *An object of class formula:* the model formula.
+- **@param data** *A data frame:* containing the variables in the formula, group, and weights.
+- **@param group** *A character string:* the name of the binary group variable in the data. 1 for the first group, and 0 for the second group.
+- **@param weights** *A character string:* the name of the weights variable in the data.
+- **@param R** *An integer:* the number of bootstrap replicates. Default is 1000.
+- **@param conf.level** *A float less than 1:* Confidence level for estimated CI.
 
 A working example can be run pointing to the following project path:
 

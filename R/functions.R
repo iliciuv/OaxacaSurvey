@@ -4,7 +4,7 @@
 #' @import boot
 #' @import survey
 #' @param formula An object of class formula: the model formula.
-#' @param data A data frame containing the variables in the formula, group, and weights.
+#' @param data A data frame: containing the variables in the formula, group, and weights.
 #' @param group A character string: the name of the binary group variable in the data. 1 for the first group, and 0 for the second group.
 #' @param weights A character string: the name of the weights variable in the data.
 #' @param R An integer: the number of bootstrap replicates. Default is 1000.
