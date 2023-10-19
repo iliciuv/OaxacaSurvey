@@ -4,7 +4,7 @@
 \alias{oaxaca_blinder_svy}
 \title{Oaxaca-Blinder Decomposition with Bootstrap Confidence Intervals using svyglm}
 \usage{
-oaxaca_blinder_svy(formula, data, group, weights, iters)
+oaxaca_blinder_svy(formula, data, group, weights, R = 1000)
 }
 \arguments{
 \item{formula}{An object of class formula: the model formula.}
@@ -15,7 +15,7 @@ oaxaca_blinder_svy(formula, data, group, weights, iters)
 
 \item{weights}{A character string: the name of the weights variable in the data.}
 
-\item{iters}{An integer: the number of bootstrap replicates. Default is 1000.}
+\item{R}{An integer: the number of bootstrap replicates. Default is 1000.}
 }
 \value{
 A list containing the mean and confidence intervals for endowments, coefficients, and interaction components.
