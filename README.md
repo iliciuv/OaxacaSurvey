@@ -41,9 +41,9 @@ $$ {Y} = \hat\beta_{0}  +  \hat\beta_{1} {X} + u $$
 
 Where to distinct groups, let say 1 & 2, sharing certain characteristics, could be subsampled and estimated individual in the form of:
 
-$$ {Y}_1 = \hat\beta_{01}  +  \hat\beta_{1} {X}_1 + u $$
+$$ Y_1 = \hat\beta_{01}  +  \hat\beta_{1} {X}_1 + u $$
 
-$$ {Y}_2 = \hat\beta_{02}  +  \hat\beta_{1} {X}_2 + u $$
+$$ Y_2 = \hat\beta_{02}  +  \hat\beta_{1} {X}_2 + u $$
 
 After this first step estimation and assuming the mean difference on the endogenous variable for the groups is by definition:
 
