@@ -5,6 +5,7 @@ library(survey) # depends on for svyglm and survey designs
 library(boot) # depends on for bootstraping CI
 library(OaxacaSurvey) # latest version of this package
 
+library(data.table) # optional, for data import and handling
 library(magrittr) # optional, for piping with %>%
 
 
