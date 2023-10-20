@@ -73,7 +73,6 @@ result %>% print()
 
 data1 <- data[data$group == 1, ]
 data2 <- data[data$group == 0, ]
-data2 <- sample(data2, nrow(data1), replace = TRUE)
 
 des1 <- svydesign(ids = ~1, data = data1, weights = data1[, as.character(weights)])
 des2 <- svydesign(ids = ~1, data = data2, weights = data2[, as.character(weights)])

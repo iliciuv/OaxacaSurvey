@@ -18,7 +18,6 @@
 #' }
 #' @export
 oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.level = 0.95) {
-
   # Oaxaca-Blinder Decomposition on a single dataset
 
   single_decomposition <- function(data, indices) {
@@ -37,27 +36,39 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
   oaxaca_blinder_core <- function(data, formula, group, weights) {
     exclude_cols <- c("y", "group", "weights")
 
+    # Split 2 distinct control groups
     data1 <- data[data$group == 1, ]
     data2 <- data[data$group == 0, ]
 
+    # Define survey design accounting for sample weights and other characteristics
     des1 <- svydesign(ids = ~1, data = data1, weights = data1[, as.character(weights)])
     des2 <- svydesign(ids = ~1, data = data2, weights = data2[, as.character(weights)])
 
+    # Estimate svygml model accounting for survey design
     model1 <- svyglm(formula, design = des1)
     model2 <- svyglm(formula, design = des2)
 
+    # Obtain weighted means for needed variables
     relevant_vars <- names(des1$variables[!names(des1$variables) %in% exclude_cols])
-
     means1 <- weighted_means(des1, relevant_vars)
     means2 <- weighted_means(des2, relevant_vars)
+    means1_y <- weighted_means(des1, "y")
+    means2_y <- weighted_means(des2, "y")
 
     # Extract decomposition
     endowments <- sum(coef(model2)[-1] * (means1 - means2))
     coefficients <- sum((coef(model1)[-1] - coef(model2)[-1]) * means2)
     interaction <- sum((coef(model1)[-1] - coef(model2)[-1]) * (means1 - means2))
+    unexplained <- unname(coef(model1)[1] - coef(model2)[1])
+    total <- endowments + coefficients + interaction + unexplained
 
     # Return decomposition
-    return(c(endowments, coefficients, interaction))
+    return(
+      list(
+        oaxaca_blinder = c(unex = unexplained, end = endowments, coef = coefficients, inter = interaction, total = total),
+        mean_values_endo = c(means1 = means1_y, means2 = means2_y, means_dif = (means1_y - means2_y))
+      )
+    )
   }
 
   # Bootstrap
