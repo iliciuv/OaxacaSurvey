@@ -37,13 +37,13 @@ source("tests/examples.R")
 
 Let's assume we have a linear model of the general form:
 
-$$ {Y} = \hat{\beta}_{0}  +  \hat{\beta}_{1} {X} + u $$
+$$ {Y} = \hat\beta_{0}  +  \hat\beta_{1} {X} + u $$
 
 Where to distinct groups, let say 1 & 2, sharing certain characteristics, could be subsampled and estimated individual in the form of:
 
-$$ {Y}_1 = \hat{\beta}_{01}  +  \hat{\beta}_{1} {X}_1 + u $$
+$$ {Y}_1 = \hat\beta_{01}  +  \hat\beta_{1} {X}_1 + u $$
 
-$$ {Y}_2 = \hat{\beta}_{02}  +  \hat{\beta}_{1} {X}_2 + u $$
+$$ {Y}_2 = \hat\beta_{02}  +  \hat\beta_{1} {X}_2 + u $$
 
 After this first step estimation and assuming the mean difference on the endogenous variable for the groups is by definition:
 
@@ -64,12 +64,12 @@ For:
 
 The difference in mean outcomes between the two groups can be expressed as:
 
-$$ \Delta \bar{Y} = (\hat\beta_{01} - \hat\beta_{02}) + (\bar{X}_1 - \bar{X}_2) \hat\beta_2 + \bar{X}_2 (\hat{\beta}_1 - \hat{\beta}_2) + (\bar{X}_1 - \bar{X}_2) (\hat{\beta}_1 - \hat{\beta}_2) $$
+$$ \Delta \bar{Y} = (\hat\beta_{01} - \hat\beta_{02}) + (\bar{X}_1 - \bar{X}_2) \hat{\beta}_2 + \bar{X}_2 (\hat{\beta}_1 - \hat{\beta}_2) + (\bar{X}_1 - \bar{X}_2) (\hat{\beta}_1 - \hat{\beta}_2) $$
 
 Where:
 
 - $\Delta \bar{Y}$ is the difference in mean outcomes between group 1 and group 2.
-- $\hat{\beta}_{01}$ and $\hat{\beta}_{02}$ are the estimated intercepts for group 1 and group 2, respectively.
+- $\hat\beta_{01}$ and $\hat\beta_{02}$ are the estimated intercepts for group 1 and group 2, respectively.
 - $\bar{X}_1$ and $\bar{X}_2$ are the mean values of the covariates for group 1 and group 2, respectively.
 - $\hat{\beta}_1$ and $\hat{\beta}_2$ are the estimated coefficients for group 1 and group 2, respectively.
 
