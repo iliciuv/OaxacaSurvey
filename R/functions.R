@@ -28,7 +28,7 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
 
   weighted_means <- function(design, variables) {
     means <- sapply(variables, function(v) {
-      as.numeric(svymean(as.formula(paste0("~ ", v)), design = design))
+      as.numeric(survey::svymean(as.formula(paste0("~ ", v)), design = design))
     })
     return(means)
   }
@@ -42,12 +42,12 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
     data2 <- data[data$group == 0, ]
 
     # Define survey design accounting for sample weights and other characteristics
-    des1 <- svydesign(ids = ~1, data = data1, weights = data1[, as.character(weights)])
-    des2 <- svydesign(ids = ~1, data = data2, weights = data2[, as.character(weights)])
+    des1 <- survey::svydesign(ids = ~1, data = data1, weights = data1[, as.character(weights)])
+    des2 <- survey::svydesign(ids = ~1, data = data2, weights = data2[, as.character(weights)])
 
     # Estimate svygml model accounting for survey design
-    model1 <- svyglm(formula, design = des1)
-    model2 <- svyglm(formula, design = des2)
+    model1 <- survey::svyglm(formula, design = des1)
+    model2 <- survey::svyglm(formula, design = des2)
 
     # Obtain weighted means for needed variables
     relevant_vars <- names(des1$variables[!names(des1$variables) %in% exclude_cols])
@@ -74,7 +74,7 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
 
   # Bootstrap
   set.seed(123) # for reproducibility
-  boot.result <- boot(data = data, statistic = single_decomposition, R = R)
+  boot.result <- boot::boot(data = data, statistic = single_decomposition, R = R)
 
   # Compute Confidence Intervals
   alpha <- 1 - conf.level
