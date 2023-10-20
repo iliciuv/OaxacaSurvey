@@ -72,7 +72,7 @@ Where:
 - $\bar{X}_1$ and $\bar{X}_2$ are the mean values of the covariates for group 1 and group 2, respectively.
 - $\hat{\beta}_1$ and $\hat{\beta}_2$ are the estimated coefficients for group 1 and group 2, respectively.
 
-The three terms on the right side represent the contributions from differences in endowments (E), coefficients (C), and interaction effects (I).
+The three terms on the right side represent the contributions from differences in unexplained (U), endowments (E), coefficients (C), and interaction effects (I).
 
 --------------------------------------------------
 --------------------------------------------------
