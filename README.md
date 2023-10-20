@@ -51,7 +51,7 @@ Where:
 - $I$ represents the interaction effect.
 The difference in mean outcomes between the two groups can be expressed as:
 
-$$ \Delta \bar{Y} = (\bar{X}_1 - \bar{X}_0) \hat{\beta}_0 + \bar{X}_0 (\hat{\beta}_1 - \hat{\beta}_0) + (\bar{X}_1 - \bar{X}_0) (\hat{\beta}_1 - \hat{\beta}_0) $$
+$$ \Delta \bar{Y} = (\bar{X}_1 - \bar{X}_2) \hat{\beta}_2 + \bar{X}_0 (\hat{\beta}_1 - \hat{\beta}_2) + (\bar{X}_1 - \bar{X}_2) (\hat{\beta}_1 - \hat{\beta}_2) $$
 
 Where:
 
