@@ -11,3 +11,4 @@ Imports:
   survey,
   boot,
   data.table
+RoxygenNote: 7.2.3
