@@ -64,7 +64,7 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
 
     # Return decomposition
     return(
-      list(
+      c(
         unex = unexplained, end = endowments, coef = coefficients, inter = interaction, total = total,
         means1 = means1_y, means2 = means2_y, means_dif = (means1_y - means2_y)
       )
