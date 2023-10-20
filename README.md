@@ -60,7 +60,6 @@ For:
 - $E$ represents the endowments effect.
 - $C$ represents the coefficients effect.
 - $I$ represents the interaction effect.
--
 
 The difference in mean outcomes between the two groups can be expressed as:
 
