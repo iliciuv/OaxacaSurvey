@@ -1,5 +1,5 @@
 ---
-output: html_document
+output: pdf_document
 ---
 
 Example adapted to render its results to html with Rmd and knitr.
