@@ -37,19 +37,19 @@ source("tests/examples.R")
 
 Let's assume we have a linear model of the general form:
 
-$$ {Y} = \hat{\beta}_{0}  +  \hat{\beta}_{1} {X} + u$$
+$$ {Y} = \hat{\beta}_{0}  +  \hat{\beta}_{1} {X} + u $$
 
 Where to distinct groups, let say 1 & 2, sharing certain characteristics, could be subsampled and estimated individual in the form of:
 
-$$ {Y}_1 = \hat{\beta}_{01}  +  \hat{\beta}_{1} {X}_1 + u$$
-$$ {Y}_2 = \hat{\beta}_{02}  +  \hat{\beta}_{1} {X}_2 + u$$
+$$ {Y}_1 = \hat{\beta}_{01}  +  \hat{\beta}_{1} {X}_1 + u $$
+
+$$ {Y}_2 = \hat{\beta}_{02}  +  \hat{\beta}_{1} {X}_2 + u $$
 
 After this first step estimation and assuming the mean difference on the endogenous variable for the groups is by definition:
 
 $$ \Delta \bar{Y} = \bar{Y}_1 - \bar{Y}_2  $$
 
 We then could rearrange both models together to build the so called Oaxaca-Blinder decomposition. The Decomposition computed is the so-called "triple" (even "quadruple" if we also consider the "Unexplained" remainder):
-
 
 $$ \Delta Y = U + E + C + I \ $$
 
@@ -60,6 +60,8 @@ For:
 - $E$ represents the endowments effect.
 - $C$ represents the coefficients effect.
 - $I$ represents the interaction effect.
+-
+
 The difference in mean outcomes between the two groups can be expressed as:
 
 $$ \Delta \bar{Y} = (\hat{\beta}_{01} - \hat{\beta}_{02}) + (\bar{X}_1 - \bar{X}_2) \hat{\beta}_2 + \bar{X}_2 (\hat{\beta}_1 - \hat{\beta}_2) + (\bar{X}_1 - \bar{X}_2) (\hat{\beta}_1 - \hat{\beta}_2) $$
@@ -73,10 +75,9 @@ Where:
 
 The three terms on the right side represent the contributions from differences in endowments (E), coefficients (C), and interaction effects (I).
 
-
-
 --------------------------------------------------
 --------------------------------------------------
 
 ## Pending implementations
+
 last rev: 20/10/2023
