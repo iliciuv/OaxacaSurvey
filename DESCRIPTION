@@ -9,6 +9,5 @@ License: GPL-3
 Encoding: UTF-8
 Imports:
   survey,
-  boot,
-  data.table
+  boot
 RoxygenNote: 7.2.3

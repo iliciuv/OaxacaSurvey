@@ -3,7 +3,6 @@
 #' Oaxaca-Blinder Decomposition with Bootstrap Confidence Intervals using svyglm
 #' @import boot
 #' @import survey
-#' @import data.table
 #' @param formula An object of class formula: the model formula.
 #' @param data A data frame: containing the variables in the formula, group, and weights.
 #' @param group A character string: the name of the binary group variable in the data. 1 for the first group, and 0 for the second group.
@@ -82,15 +81,15 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
   ci.upper <- apply(boot.result$t, 2, function(x) quantile(x, 1 - alpha / 2))
 
   # Return results as a list
-  result <- data.table::data.table(
-    unex = list(value = mean(boot.result$t[, 1]), CI = c(ci.lower[1], ci.upper[1])),
-    end = list(value = mean(boot.result$t[, 2]), CI = c(ci.lower[2], ci.upper[2])),
-    coef = list(value = mean(boot.result$t[, 3]), CI = c(ci.lower[3], ci.upper[3])),
-    inter = list(value = mean(boot.result$t[, 4]), CI = c(ci.lower[4], ci.upper[4])),
-    total = list(value = mean(boot.result$t[, 5]), CI = c(ci.lower[5], ci.upper[5])),
-    means1_y = list(value = mean(boot.result$t[, 6]), CI = c(ci.lower[6], ci.upper[6])),
-    means2_y = list(value = mean(boot.result$t[, 7]), CI = c(ci.lower[7], ci.upper[7])),
-    means_dif = list(value = mean(boot.result$t[, 8]), CI = c(ci.lower[8], ci.upper[8]))
+  result <- data.frame(
+    unex = c(value = mean(boot.result$t[, 1]), CI = c(ci.lower[1], ci.upper[1])),
+    end = c(value = mean(boot.result$t[, 2]), CI = c(ci.lower[2], ci.upper[2])),
+    coef = c(value = mean(boot.result$t[, 3]), CI = c(ci.lower[3], ci.upper[3])),
+    inter = c(value = mean(boot.result$t[, 4]), CI = c(ci.lower[4], ci.upper[4])),
+    total = c(value = mean(boot.result$t[, 5]), CI = c(ci.lower[5], ci.upper[5])),
+    means1_y = c(value = mean(boot.result$t[, 6]), CI = c(ci.lower[6], ci.upper[6])),
+    means2_y = c(value = mean(boot.result$t[, 7]), CI = c(ci.lower[7], ci.upper[7])),
+    means_dif = c(value = mean(boot.result$t[, 8]), CI = c(ci.lower[8], ci.upper[8]))
   )
   return(result)
 }

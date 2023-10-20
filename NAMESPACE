@@ -2,5 +2,4 @@
 
 export(oaxaca_blinder_svy)
 import(boot)
-import(data.table)
 import(survey)
