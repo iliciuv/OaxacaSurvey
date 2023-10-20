@@ -3,9 +3,9 @@
 # Load required packages
 library(survey) # depends on for svyglm and survey designs
 library(boot) # depends on for bootstraping CI
+library(data.table) # for joint results presentation
 library(OaxacaSurvey) # latest version of this package
 
-library(data.table) # optional, only for results presentation
 library(magrittr) # optional, for piping with %>%
 
 
