@@ -20,7 +20,7 @@ data <- data.frame(
 )
 
 # Apply "oaxaca_blinder_svy" function to simulated data
-result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 10)
+result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 1000)
 
 # Return Oaxaca-Blinder decomposition with bootestraped CI
 print(result)
