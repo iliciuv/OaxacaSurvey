@@ -64,7 +64,7 @@ For:
 
 The difference in mean outcomes between the two groups can be expressed as:
 
-$$ \Delta \bar{Y} = (\hat{\beta}_{01} - \hat{\beta}_{02}) + (\bar{X}_1 - \bar{X}_2) \hat{\beta}_2 + \bar{X}_2 (\hat{\beta}_1 - \hat{\beta}_2) + (\bar{X}_1 - \bar{X}_2) (\hat{\beta}_1 - \hat{\beta}_2) $$
+$$ \Delta \bar{Y} = (\hat\beta_{01} - \hat\beta_{02}) + (\bar{X}_1 - \bar{X}_2) \hat\beta_2 + \bar{X}_2 (\hat{\beta}_1 - \hat{\beta}_2) + (\bar{X}_1 - \bar{X}_2) (\hat{\beta}_1 - \hat{\beta}_2) $$
 
 Where:
 
