@@ -1,3 +1,11 @@
+---
+output: html_document
+---
+
+Example adapted to render its results to html with Rmd and knitr.
+
+```{r, echo=TRUE}
+
 # Example usage of OaxacaSurvey
 
 # Load required packages
@@ -12,7 +20,7 @@ library(magrittr) # optional, for piping with %>%
 ############################ Test code ############################
 
 # Import dataset and prepare it for SurveyOaxaca
-df <- fread("tests/eff-pool-2002-2020.csv")
+df <- fread("eff-pool-2002-2020.csv")
 df[, group := 0][class == "worker", group := 0][class == "capitalist", group := 1]
 df[, rentsbi := 0][rents >= renthog * 0.1 & rents > 2000, rentsbi := 1]
 
@@ -37,3 +45,4 @@ result <- oaxaca_blinder_svy(
 # Return Oaxaca-Blinder decomposition with bootestraped CI
 
 result %>% print()
+```
