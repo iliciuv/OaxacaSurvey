@@ -35,31 +35,32 @@ source("tests/examples.R")
 
 ### Underlying logic
 
-The Decomposition computed is the so-called "triple":
+The Decomposition computed is the so-called "triple" (even "quadruple" if we also consider the "Unexplained" remainder):
 
-- Endowments
-- Coefficients
-- Interactions
 
-$$ \Delta Y = E + C + I \ $$
+$$ \Delta Y = U + E + C + I \ $$
 
 Where:
 
 - $\Delta Y$ is the mean difference in the outcome variable between the two groups.
+- $U$ is the unexplained remainder (difference of model intercepts, usually omitted).
 - $E$ represents the endowments effect.
 - $C$ represents the coefficients effect.
 - $I$ represents the interaction effect.
 The difference in mean outcomes between the two groups can be expressed as:
 
-$$ \Delta \bar{Y} = (\bar{X}_1 - \bar{X}_2) \hat{\beta}_2 + \bar{X}_2 (\hat{\beta}_1 - \hat{\beta}_2) + (\bar{X}_1 - \bar{X}_2) (\hat{\beta}_1 - \hat{\beta}_2) $$
+$$ \Delta \bar{Y} = (\hat{\beta}_{01} - \hat{\beta}_{02}) + (\bar{X}_1 - \bar{X}_2) \hat{\beta}_2 + \bar{X}_2 (\hat{\beta}_1 - \hat{\beta}_2) + (\bar{X}_1 - \bar{X}_2) (\hat{\beta}_1 - \hat{\beta}_2) $$
 
 Where:
 
 - $\Delta \bar{Y}$ is the difference in mean outcomes between group 1 and group 2.
+- $\hat{\beta}_{01}$ and $\hat{\beta}_{02}$ are the estimated intercepts for group 1 and group 2, respectively.
 - $\bar{X}_1$ and $\bar{X}_2$ are the mean values of the covariates for group 1 and group 2, respectively.
 - $\hat{\beta}_1$ and $\hat{\beta}_2$ are the estimated coefficients for group 1 and group 2, respectively.
 
 The three terms on the right side represent the contributions from differences in endowments (E), coefficients (C), and interaction effects (I).
+
+
 
 --------------------------------------------------
 --------------------------------------------------
