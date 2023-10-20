@@ -39,7 +39,7 @@ Let's assume we have a linear model of the general form:
 
 $$ {Y} = \hat\beta_{0}  +  \hat\beta_{1} {X} + u $$
 
-Where to distinct groups, let say 1 & 2, sharing certain characteristics, could be subsampled and estimated individual in the form of:
+Where two distinct groups, let say 1 & 2, sharing certain characteristics, could be subsampled and estimated individually in the form of:
 
 $$ Y_1 = \hat\beta_{01}  +  \hat\beta_{1} {X}_1 + u $$
 
