@@ -55,9 +55,9 @@ $$ \Delta \bar{Y} = (\bar{X}_1 - \bar{X}_2) \hat{\beta}_2 + \bar{X}_2 (\hat{\bet
 
 Where:
 
-- $\Delta \bar{Y}$ is the difference in mean outcomes between group 1 and group 0.
-- $\bar{X}_1$ and $\bar{X}_0$ are the mean values of the covariates for group 1 and group 0, respectively.
-- $\hat{\beta}_1$ and $\hat{\beta}_0$ are the estimated coefficients for group 1 and group 0, respectively.
+- $\Delta \bar{Y}$ is the difference in mean outcomes between group 1 and group 2.
+- $\bar{X}_1$ and $\bar{X}_2$ are the mean values of the covariates for group 1 and group 2, respectively.
+- $\hat{\beta}_1$ and $\hat{\beta}_2$ are the estimated coefficients for group 1 and group 2, respectively.
 
 The three terms on the right side represent the contributions from differences in endowments (E), coefficients (C), and interaction effects (I).
 
