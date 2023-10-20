@@ -65,8 +65,8 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
     # Return decomposition
     return(
       list(
-        oaxaca_blinder = c(unex = unexplained, end = endowments, coef = coefficients, inter = interaction, total = total),
-        mean_values_endo = c(means1 = means1_y, means2 = means2_y, means_dif = (means1_y - means2_y))
+        unex = unexplained, end = endowments, coef = coefficients, inter = interaction, total = total,
+        means1 = means1_y, means2 = means2_y, means_dif = (means1_y - means2_y)
       )
     )
   }
@@ -82,10 +82,14 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
 
   # Return results as a list
   result <- list(
-    endowments = list(value = mean(boot.result$t[, 1]), CI = c(ci.lower[1], ci.upper[1])),
-    coefficients = list(value = mean(boot.result$t[, 2]), CI = c(ci.lower[2], ci.upper[2])),
-    interaction = list(value = mean(boot.result$t[, 3]), CI = c(ci.lower[3], ci.upper[3])),
-    total_effect = (mean(boot.result$t[, 1]) + mean(boot.result$t[, 2]) + mean(boot.result$t[, 3]))
+    unex = list(value = mean(boot.result$t[, 1]), CI = c(ci.lower[1], ci.upper[1])),
+    end = list(value = mean(boot.result$t[, 2]), CI = c(ci.lower[2], ci.upper[2])),
+    coef = list(value = mean(boot.result$t[, 3]), CI = c(ci.lower[3], ci.upper[3])),
+    inter = list(value = mean(boot.result$t[, 4]), CI = c(ci.lower[4], ci.upper[4])),
+    total = list(value = mean(boot.result$t[, 5]), CI = c(ci.lower[5], ci.upper[5])),
+    means1_y = list(value = mean(boot.result$t[, 6]), CI = c(ci.lower[6], ci.upper[6])),
+    means2_y = list(value = mean(boot.result$t[, 7]), CI = c(ci.lower[7], ci.upper[7])),
+    means_dif = list(value = mean(boot.result$t[, 8]), CI = c(ci.lower[8], ci.upper[8]))
   )
   return(result)
 }
