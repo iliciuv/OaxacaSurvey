@@ -1,9 +1,13 @@
 # Example usage of OaxacaSurvey
 
 # Load required packages
-library(survey)
-library(boot)
-library(OaxacaSurvey)
+library(survey) # depends on for svyglm and survey designs
+library(boot) # depends on for bootstraping CI
+library(OaxacaSurvey) # latest version of this package
+
+library(data.table) # optional, only for results presentation
+library(magrittr) # optional, for piping with %>%
+
 
 # Simulated sample size
 n <- 1000

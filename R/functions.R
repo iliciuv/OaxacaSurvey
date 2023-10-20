@@ -3,6 +3,7 @@
 #' Oaxaca-Blinder Decomposition with Bootstrap Confidence Intervals using svyglm
 #' @import boot
 #' @import survey
+#' @import data.table
 #' @param formula An object of class formula: the model formula.
 #' @param data A data frame: containing the variables in the formula, group, and weights.
 #' @param group A character string: the name of the binary group variable in the data. 1 for the first group, and 0 for the second group.
@@ -81,7 +82,7 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
   ci.upper <- apply(boot.result$t, 2, function(x) quantile(x, 1 - alpha / 2))
 
   # Return results as a list
-  result <- list(
+  result <- data.table::data.table(
     unex = list(value = mean(boot.result$t[, 1]), CI = c(ci.lower[1], ci.upper[1])),
     end = list(value = mean(boot.result$t[, 2]), CI = c(ci.lower[2], ci.upper[2])),
     coef = list(value = mean(boot.result$t[, 3]), CI = c(ci.lower[3], ci.upper[3])),
