@@ -81,10 +81,8 @@ result %>% print()
 
 # adaption to OaxacaSurvey function
 data <- df[, ..selected_variables]
-colnames(data) <- paste0("x", seq_along(selected_variables))
-data[, y := df$renthog]
-data[, group := df$group]
-data[, weights := df$facine3]
+colnames(data) <- paste0("x", seq_along(colnames(data)))
+data <- cbind(renthog = df$renthog, group = df$group, weights = df$facine3, data)
 
 # Create the string
 length_reg <- length(colnames(data)) - 3
