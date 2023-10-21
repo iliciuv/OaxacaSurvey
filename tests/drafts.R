@@ -87,8 +87,18 @@ data[, group := df$group]
 data[, weights := df$facine3]
 
 # Create the string
-length_reg <- length(colnames(data))
-new_formula <- paste("y ~", paste0("x", 1:length_reg), collapse = " + ")
+length_reg <- length(colnames(data)) - 3
+new_formula <- paste("y ~", paste0("x", 1:length_reg, collapse = " + "))
 
 print(new_formula)
 head(data)
+
+
+
+result <- oaxaca_blinder_svy(
+  as.formula(new_formula),
+  data = data,
+  group = "group",
+  weights = "weights",
+  R = 10
+)
