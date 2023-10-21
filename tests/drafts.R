@@ -49,9 +49,6 @@ model3 %>% coef() %>% head() %>% print
 # (Intercept)   bage35-44   bage45-54   bage54-65   bage65-75      bage75
 #   21912.893  -11396.627  -11450.651   -7090.570   -6794.408   -6662.884
 
-
-
-
 ############################ Test code ############################
 
 # adaption to OaxacaSurvey function
