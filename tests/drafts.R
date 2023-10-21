@@ -2,7 +2,86 @@
 `%>%` <- magrittr::`%>%` # nolint
 options(scipen = 99)
 rif_var <- "quantile"
-c("survey", "data.table", "boot", "dineq", "OaxacaSurvey") %>% sapply(library, character.only = T)
+c("survey", "data.table", "boot", "dineq") %>% sapply(library, character.only = T)
+
+
+oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.level = 0.95) {
+  # Oaxaca-Blinder Decomposition on a single dataset
+
+  single_decomposition <- function(data, indices) {
+    data <- data[indices, ] # obtain the bootstrapped sample
+    return(oaxaca_blinder_core(data, formula, group, weights))
+  }
+
+  weighted_means <- function(design, variables) {
+    means <- sapply(variables, function(v) {
+      as.numeric(survey::svymean(as.formula(paste0("~ ", v)), design = design))
+    })
+    return(means)
+  }
+
+  # Core function without bootstrapping
+  oaxaca_blinder_core <- function(data, formula, group, weights) {
+    exclude_cols <- c("y", "group", "weights")
+
+    # Split 2 distinct control groups
+    data1 <- data[data$group == 1, ]
+    data2 <- data[data$group == 0, ]
+
+    # Define survey design accounting for sample weights and other characteristics
+    des1 <- survey::svydesign(ids = ~1, data = data1, weights = data1[, as.character(weights)])
+    des2 <- survey::svydesign(ids = ~1, data = data2, weights = data2[, as.character(weights)])
+
+    # Estimate svygml model accounting for survey design
+    model1 <- survey::svyglm(formula, design = des1)
+    model2 <- survey::svyglm(formula, design = des2)
+
+    # Obtain weighted means for needed variables
+    relevant_vars <- names(des1$variables[!names(des1$variables) %in% exclude_cols])
+    means1 <- weighted_means(des1, relevant_vars)
+    means2 <- weighted_means(des2, relevant_vars)
+    means1_y <- weighted_means(des1, "y")
+    means2_y <- weighted_means(des2, "y")
+
+    # Extract decomposition
+    endowments <- sum(coef(model2)[-1] * (means1 - means2))
+    coefficients <- sum((coef(model1)[-1] - coef(model2)[-1]) * means2)
+    interaction <- sum((coef(model1)[-1] - coef(model2)[-1]) * (means1 - means2))
+    unexplained <- unname(coef(model1)[1] - coef(model2)[1])
+    total <- endowments + coefficients + interaction + unexplained
+
+    # Return decomposition
+    return(
+      c(
+        unex = unexplained, end = endowments, coef = coefficients, inter = interaction, total = total,
+        means1 = means1_y, means2 = means2_y, means_dif = (means1_y - means2_y)
+      )
+    )
+  }
+
+  # Bootstrap
+  set.seed(123) # for reproducibility
+  boot.result <- boot::boot(data = data, statistic = single_decomposition, R = R)
+
+  # Compute Confidence Intervals
+  alpha <- 1 - conf.level
+  ci.lower <- apply(boot.result$t, 2, function(x) quantile(x, alpha / 2, na.rm = T))
+  ci.upper <- apply(boot.result$t, 2, function(x) quantile(x, 1 - alpha / 2, na.rm = T))
+
+  # Return results as a list
+  result <- data.frame(
+    unex = c(value = mean(boot.result$t[, 1]), CI = c(ci.lower[1], ci.upper[1])),
+    end = c(value = mean(boot.result$t[, 2]), CI = c(ci.lower[2], ci.upper[2])),
+    coef = c(value = mean(boot.result$t[, 3]), CI = c(ci.lower[3], ci.upper[3])),
+    inter = c(value = mean(boot.result$t[, 4]), CI = c(ci.lower[4], ci.upper[4])),
+    total = c(value = mean(boot.result$t[, 5]), CI = c(ci.lower[5], ci.upper[5])),
+    means1_y = c(value = mean(boot.result$t[, 6]), CI = c(ci.lower[6], ci.upper[6])),
+    means2_y = c(value = mean(boot.result$t[, 7]), CI = c(ci.lower[7], ci.upper[7])),
+    means_dif = c(value = mean(boot.result$t[, 8]), CI = c(ci.lower[8], ci.upper[8]))
+  )
+  return(result)
+}
+
 
 # Import dataset and perform data manipulation
 df <- fread("tests/eff-pool-2002-2020.csv")
@@ -20,10 +99,7 @@ total_variables <- c(
   "actreales", "riquezanet", "riquezafin", "educ", "auton", "class",
   "tipo_auton", "direc", "multipr", "useprop", "inherit"
 )
-selected_variables <- c(
-  "facine3", "renthog1", "bage", "homeowner", "sex", "class",
-  "riquezanet", "educ", "auton", "direc", "multipr", "inherit"
-)
+
 formula <- rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr
 df <- df[sv_year == 2020]
 
@@ -40,16 +116,13 @@ model3 <- lm(formula, data = df)
 
 model1 %>%
   coef() %>%
-  head() %>%
-  print()
+  head()
 model2 %>%
   coef() %>%
-  head() %>%
-  print()
+  head()
 model3 %>%
   coef() %>%
-  head() %>%
-  print()
+  head()
 
 # Results:
 # (Intercept)   bage35-44   bage45-54   bage54-65   bage65-75      bage75
@@ -77,12 +150,14 @@ result <- oaxaca_blinder_svy(
   R = 10
 )
 result %>% print()
-
+selected_variables <- c(
+  "renthog", "riquezanet"
+)
 
 # adaption to OaxacaSurvey function
 data <- df[, ..selected_variables]
 colnames(data) <- paste0("x", seq_along(colnames(data)))
-data <- cbind(renthog = df$renthog, group = df$group, weights = df$facine3, data)
+data <- cbind(y = df$rif_rents, group = df$group, weights = df$facine3, data)
 
 # Create the string
 length_reg <- length(colnames(data)) - 3
@@ -91,12 +166,14 @@ new_formula <- paste("y ~", paste0("x", 1:length_reg, collapse = " + "))
 print(new_formula)
 head(data)
 
+model4 <- lm(as.formula(new_formula), data = data)
 
-
-result <- oaxaca_blinder_svy(
+result2 <- oaxaca_blinder_svy(
   as.formula(new_formula),
-  data = data,
+  data = data.frame(data),
   group = "group",
   weights = "weights",
   R = 10
 )
+dt_dum <- fastDummies::dummy_cols(df, select_columns = c("homeowner"), remove_first_dummy = T, remove_selected_columns = T)
+dt_du2 <- fastDummies::dummy_cols(df, select_columns = c("class", "bage", "homeowner"), remove_selected_columns = T)
