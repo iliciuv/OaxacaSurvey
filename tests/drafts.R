@@ -78,3 +78,12 @@ colnames(data) <- paste0("x", seq_along(selected_variables))
 
 
 lm(rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr, weights = facine3, data = dt_transform)
+
+# Split 2 distinct control groups
+data1 <- data[data$group == 1, ]
+
+# Define survey design accounting for sample weights and other characteristics
+des1 <- survey::svydesign(ids = ~1, data = data1, weights = data1[,as.character(weights)])
+
+# Estimate svygml model accounting for survey design
+model1 <- survey::svyglm(formula, design = des1)
