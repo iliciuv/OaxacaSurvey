@@ -32,8 +32,8 @@ dt_eff <- dt_eff[worker == "Worker"]
 for (i in seq_along(years)) {
     dt_transform <- dt_eff[sv_year == years[i]]
     # Estimate RIF model
-    dt_transform$rif_actreales <- rif(dt_transform$actreales, method = as.character(rif_var), quantile = 0.5)
-    models_dt[[i]] <- lm(rif_actreales ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr, weights = facine3, data = dt_transform)
+    dt_transform$rif_rents <- rif(dt_transform$rents, method = as.character(rif_var), quantile = 0.5)
+    models_dt[[i]] <- lm(rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr, weights = facine3, data = dt_transform)
 }
 
 
