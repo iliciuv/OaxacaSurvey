@@ -24,7 +24,12 @@ selected_variables <- c(
     "facine3", "renthog1", "bage", "homeowner", "sex", "class",
    "riquezanet",  "educ", "auton","direc", "multipr", "inherit"
 )
+formula <- rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr
 df <- df[sv_year == 2020]
+# adaption to OaxacaSurvey function
+data <- df[, ..selected_variables]
+colnames(data) <- paste0("x", seq_along(selected_variables))
+
 
 
 ############### Test lm (with and without weights) vs svyglm #############
@@ -50,11 +55,6 @@ model3 %>% coef() %>% head() %>% print
 #   21912.893  -11396.627  -11450.651   -7090.570   -6794.408   -6662.884
 
 ############################ Test code ############################
-
-# adaption to OaxacaSurvey function
-data <- df[, ..selected_variables]
-colnames(data) <- paste0("x", seq_along(selected_variables))
-formula <- rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr
 
 # Apply "oaxaca_blinder_svy" function to simulated data
 data <- data.frame(
