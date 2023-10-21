@@ -16,20 +16,16 @@ df$homeowner <- relevel(as.factor(df$homeowner), ref = "Non-Owner")
 df$riquezafin <- factor(as.logical(df$riquezafin), levels = c(T, F), labels = c("Fin", "NonFin"))
 df[, rif_rents := rif(rents)]
 total_variables <- c(
-    "facine3", "renthog", "renthog1", "bage", "homeowner", "worker", "young", "sex", "class",
-    "actreales", "riquezanet", "riquezafin", "educ", "auton", "class",
-    "tipo_auton", "direc", "multipr", "useprop", "inherit"
+  "facine3", "renthog", "renthog1", "bage", "homeowner", "worker", "young", "sex", "class",
+  "actreales", "riquezanet", "riquezafin", "educ", "auton", "class",
+  "tipo_auton", "direc", "multipr", "useprop", "inherit"
 )
 selected_variables <- c(
-    "facine3", "renthog1", "bage", "homeowner", "sex", "class",
-   "riquezanet",  "educ", "auton","direc", "multipr", "inherit"
+  "facine3", "renthog1", "bage", "homeowner", "sex", "class",
+  "riquezanet", "educ", "auton", "direc", "multipr", "inherit"
 )
 formula <- rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr
 df <- df[sv_year == 2020]
-# adaption to OaxacaSurvey function
-data <- df[, ..selected_variables]
-colnames(data) <- paste0("x", seq_along(selected_variables))
-
 
 
 ############### Test lm (with and without weights) vs svyglm #############
@@ -42,9 +38,18 @@ model1 <- survey::svyglm(formula, design = df_sv)
 model2 <- lm(formula, weights = facine3, data = df)
 model3 <- lm(formula, data = df)
 
-model1 %>% coef() %>% head() %>% print
-model2 %>% coef() %>% head() %>% print
-model3 %>% coef() %>% head() %>% print
+model1 %>%
+  coef() %>%
+  head() %>%
+  print()
+model2 %>%
+  coef() %>%
+  head() %>%
+  print()
+model3 %>%
+  coef() %>%
+  head() %>%
+  print()
 
 # Results:
 # (Intercept)   bage35-44   bage45-54   bage54-65   bage65-75      bage75
@@ -72,3 +77,18 @@ result <- oaxaca_blinder_svy(
   R = 10
 )
 result %>% print()
+
+
+# adaption to OaxacaSurvey function
+data <- df[, ..selected_variables]
+colnames(data) <- paste0("x", seq_along(selected_variables))
+data[, y := df$renthog]
+data[, group := df$group]
+data[, weights := df$facine3]
+
+# Create the string
+length_reg <- length(colnames(data))
+new_formula <- paste("y ~", paste0("x", 1:length_reg), collapse = " + ")
+
+print(new_formula)
+head(data)
