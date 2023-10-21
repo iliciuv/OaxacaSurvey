@@ -1,47 +1,65 @@
-
-
-
 ### WORKSPACE SETUP- MEMORY CLEAN AND PACKAGES IMPORT
 `%>%` <- magrittr::`%>%` # nolint
 options(scipen = 99)
 rif_var <- "quantile"
 c("survey", "data.table", "boot", "dineq", "OaxacaSurvey") %>% sapply(library, character.only = T)
-selected_variables <- c(
+
+# Import dataset and perform data manipulation
+df <- fread("tests/eff-pool-2002-2020.csv")
+df[, group := 0][class == "worker", group := 0][class == "capitalist", group := 1]
+df[, rentsbi := 0][rents >= renthog * 0.1 & rents > 2000, rentsbi := 1]
+df[homeowner == "", homeowner := "Non-Owner"]
+df$class <- relevel(as.factor(df$class), ref = "self-employed")
+df$bage <- relevel(as.factor(df$bage), ref = "0-34")
+df$inherit <- relevel(as.factor(df$inherit), ref = "Non-inherit")
+df$homeowner <- relevel(as.factor(df$homeowner), ref = "Non-Owner")
+df$riquezafin <- factor(as.logical(df$riquezafin), levels = c(T, F), labels = c("Fin", "NonFin"))
+df[, rif_rents := rif(rents)]
+total_variables <- c(
     "facine3", "renthog", "renthog1", "bage", "homeowner", "worker", "young", "sex", "class",
     "actreales", "riquezanet", "riquezafin", "educ", "auton", "class",
     "tipo_auton", "direc", "multipr", "useprop", "inherit"
 )
-dt_eff <- "tests/eff-pool-2002-2020.csv" %>% fread() # Data table con microdatos anuales
-# Convert 'class' and 'bage' to dummy variables
-dt_eff[, ..selected_variables]
-dt_eff[is.na(dt_eff)] <- 0
-final_dt <- data.table()
-models_dt <- list()
-
-cpi <- c(73.31, 80.44, 89.11, 93.35, 96.82, 97.98, 100) / 100
-years <- c(2002, 2005, 2008, 2011, 2014, 2017, 2020)
-dt_eff[homeowner == "", homeowner := "Non-Owner"]
-dt_eff$class <- relevel(as.factor(dt_eff$class), ref = "self-employed")
-dt_eff$bage <- relevel(as.factor(dt_eff$bage), ref = "0-34")
-dt_eff$inherit <- relevel(as.factor(dt_eff$inherit), ref = "Non-inherit")
-dt_eff$homeowner <- relevel(as.factor(dt_eff$homeowner), ref = "Non-Owner")
-dt_eff$riquezafin <- factor(as.logical(dt_eff$riquezafin), levels = c(T, F), labels = c("Fin", "NonFin"))
-
-# dt_eff <- fastDummies::dummy_cols(dt_eff, select_columns = c("class"))
-for (i in seq_along(years)) {
-    dt_transform <- dt_eff[sv_year == years[i]]
-    # Estimate RIF model
-    dt_transform$rif_rents <- rif(dt_transform$rents, method = as.character(rif_var), quantile = 0.5)
-    models_dt[[i]] <- lm(rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr, weights = facine3, data = dt_transform)
-}
+selected_variables <- c(
+    "facine3", "renthog1", "bage", "homeowner", "sex", "class",
+   "riquezanet",  "educ", "auton","direc", "multipr", "inherit"
+)
+df <- df[sv_year == 2020]
 
 
-# Import dataset and prepare it for SurveyOaxaca
-df <- fread("tests/eff-pool-2002-2020.csv")
-df[sv_year == 2020]
-df[, group := 0][class == "worker", group := 0][class == "capitalist", group := 1]
-df[, rentsbi := 0][rents >= renthog * 0.1 & rents > 2000, rentsbi := 1]
-# Define data object simulating a suvey with sampling weigths (variable w)
+############### Test lm (with and without weights) vs svyglm #############
+
+# Define survey design accounting for sample weights and other characteristics
+df_sv <- survey::svydesign(ids = ~1, data = data.frame(df), weights = df$facine3)
+
+# Estimate svygml model accounting for survey design
+model1 <- survey::svyglm(formula, design = df_sv)
+model2 <- lm(formula, weights = facine3, data = df)
+model3 <- lm(formula, data = df)
+
+model1 %>% coef() %>% head() %>% print
+model2 %>% coef() %>% head() %>% print
+model3 %>% coef() %>% head() %>% print
+
+# Results:
+# (Intercept)   bage35-44   bage45-54   bage54-65   bage65-75      bage75
+#   24189.150  -15692.831  -13640.406   -9968.111  -10328.491   -5551.017
+# (Intercept)   bage35-44   bage45-54   bage54-65   bage65-75      bage75
+#   24189.150  -15692.831  -13640.406   -9968.111  -10328.491   -5551.017
+# (Intercept)   bage35-44   bage45-54   bage54-65   bage65-75      bage75
+#   21912.893  -11396.627  -11450.651   -7090.570   -6794.408   -6662.884
+
+
+
+
+############################ Test code ############################
+
+# adaption to OaxacaSurvey function
+data <- df[, ..selected_variables]
+colnames(data) <- paste0("x", seq_along(selected_variables))
+formula <- rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr
+
+# Apply "oaxaca_blinder_svy" function to simulated data
 data <- data.frame(
   y = df$renthog,
   x1 = df$rentsbi,
@@ -49,8 +67,6 @@ data <- data.frame(
   group = df$group,
   weights = df$facine3
 )
-
-# Apply "oaxaca_blinder_svy" function to simulated data
 result <- oaxaca_blinder_svy(
   y ~ x1 + x2,
   data = data,
@@ -58,32 +74,4 @@ result <- oaxaca_blinder_svy(
   weights = "weights",
   R = 10
 )
-
-# Return Oaxaca-Blinder decomposition with bootestraped CI
-
 result %>% print()
-
-
-
-############################ Test code ############################
-
-
-
-#  if data frame
-# data <- df[, selected_variables, drop = FALSE]
-data <- df[, ..selected_variables]
-# if names
-# names(data) <- paste0("x", seq_along(selected_variables))
-colnames(data) <- paste0("x", seq_along(selected_variables))
-
-
-lm(rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr, weights = facine3, data = dt_transform)
-
-# Split 2 distinct control groups
-data1 <- data[data$group == 1, ]
-
-# Define survey design accounting for sample weights and other characteristics
-des1 <- survey::svydesign(ids = ~1, data = data1, weights = data1[,as.character(weights)])
-
-# Estimate svygml model accounting for survey design
-model1 <- survey::svyglm(formula, design = des1)
