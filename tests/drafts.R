@@ -28,7 +28,6 @@ dt_eff$homeowner <- relevel(as.factor(dt_eff$homeowner), ref = "Non-Owner")
 dt_eff$riquezafin <- factor(as.logical(dt_eff$riquezafin), levels = c(T, F), labels = c("Fin", "NonFin"))
 
 # dt_eff <- fastDummies::dummy_cols(dt_eff, select_columns = c("class"))
-dt_eff <- dt_eff[worker == "Worker"]
 for (i in seq_along(years)) {
     dt_transform <- dt_eff[sv_year == years[i]]
     # Estimate RIF model
@@ -76,3 +75,6 @@ data <- df[, ..selected_variables]
 # if names
 # names(data) <- paste0("x", seq_along(selected_variables))
 colnames(data) <- paste0("x", seq_along(selected_variables))
+
+
+lm(rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr, weights = facine3, data = dt_transform)
