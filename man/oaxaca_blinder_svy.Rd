@@ -4,7 +4,15 @@
 \alias{oaxaca_blinder_svy}
 \title{Oaxaca-Blinder Decomposition with Bootstrap Confidence Intervals using svyglm}
 \usage{
-oaxaca_blinder_svy(formula, data, group, weights, R = 1000, conf.level = 0.95)
+oaxaca_blinder_svy(
+  formula,
+  data,
+  group,
+  weights,
+  R = 1000,
+  conf.level = 0.95,
+  method
+)
 }
 \arguments{
 \item{formula}{An object of class formula: the model formula.}
@@ -18,6 +26,8 @@ oaxaca_blinder_svy(formula, data, group, weights, R = 1000, conf.level = 0.95)
 \item{R}{An integer: the number of bootstrap replicates. Default is 1000.}
 
 \item{conf.level}{A float less than 1: Confidence level for estimated CI.}
+
+\item{method}{String: one between "normal" (default) or "logit" for logistic models.}
 }
 \value{
 A list containing the mean and confidence intervals for endowments, coefficients, and interaction components.
