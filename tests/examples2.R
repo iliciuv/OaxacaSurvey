@@ -10,8 +10,8 @@ library(magrittr) # optional, for piping with %>%
 
 # Import dataset with multilevel categorical data from a s
 df <- fread("tests/eff-pool-2002-2020.csv")
-df <- df[sv_year == 2020]
-df[, group := 0][class == "worker", group := 0][class == "capitalist", group := 1]
+df <- df[sv_year %in% c(2002, 2020)]
+df[, group := 0][class == "worker" & sv_year == 2002, group := 0][class == "worker" & sv_year == 2020, group := 1]
 df[, rentsbi := 0][rents >= renthog * 0.1 & rents > 2000, rentsbi := 1]
 df[homeowner == "", homeowner := "Non-Owner"]
 df$class <- relevel(as.factor(df$class), ref = "self-employed")
@@ -61,4 +61,6 @@ result <- oaxaca_blinder_svy(
 result %>% print()
 
 # plot the Oaxaca-Blinder decomposition in bars
-result["value", ][1:4] %>% as.matrix() %>% barplot()
+result["value", ][1:4] %>%
+  as.matrix() %>%
+  barplot()
