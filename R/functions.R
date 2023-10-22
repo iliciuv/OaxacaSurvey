@@ -9,6 +9,7 @@
 #' @param weights A character string: the name of the weights variable in the data.
 #' @param R An integer: the number of bootstrap replicates. Default is 1000.
 #' @param conf.level A float less than 1: Confidence level for estimated CI.
+#' @param method String: one between "normal" (default) or "logit" for logistic models.
 #'
 #' @return A list containing the mean and confidence intervals for endowments, coefficients, and interaction components.
 #' @examples
@@ -17,7 +18,7 @@
 #' result <- oaxaca_blinder_svy(y ~ x1 + x2, data = data, group = "group", weights = "w", R = 1000)
 #' }
 #' @export
-oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.level = 0.95) {
+oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.level = 0.95, method) {
   # Oaxaca-Blinder Decomposition on a single dataset
 
   single_decomposition <- function(data, indices) {
@@ -35,7 +36,13 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
   # Core function without bootstrapping
   oaxaca_blinder_core <- function(data, formula, group, weights) {
     exclude_cols <- c("y", "group", "weights")
-
+    exclude_cols <- c("y", "group", "weights")
+    if (method == "logit") {
+      fam <- binomial(link = "logit")
+    }
+    if (method == "normal") {
+      fam <- quasi(link = "identity")
+    }
     # Split 2 distinct control groups
     data1 <- data[data$group == 1, ]
     data2 <- data[data$group == 0, ]
@@ -45,8 +52,8 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
     des2 <- survey::svydesign(ids = ~1, data = data2, weights = data2[, as.character(weights)])
 
     # Estimate svygml model accounting for survey design
-    model1 <- survey::svyglm(formula, design = des1)
-    model2 <- survey::svyglm(formula, design = des2)
+    model1 <- survey::svyglm(formula, design = des1, family = fam)
+    model2 <- survey::svyglm(formula, design = des2, family = fam)
 
     # Obtain weighted means for needed variables
     relevant_vars <- names(des1$variables[!names(des1$variables) %in% exclude_cols])

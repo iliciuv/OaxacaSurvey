@@ -54,7 +54,8 @@ result <- oaxaca_blinder_svy(
   data = data.frame(data),
   group = "group",
   weights = "weights",
-  R = 10
+  R = 10,
+  method = "normal"
 )
 
 # Return Oaxaca-Blinder decomposition with bootestraped CI
