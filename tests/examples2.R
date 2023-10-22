@@ -52,6 +52,6 @@ result2 <- oaxaca_blinder_svy(
   data = data.frame(data),
   group = "group",
   weights = "weights",
-  R = 10
+  R = 1000
 )
 print(result2)
