@@ -1,9 +1,11 @@
 # Example 2: logistic models with multilevel categorical covariates
 # Real data  from Spain's Encuesta Financiera de Familias (2002-2020)
 
-library(data.table)
-library(OaxacaSurvey)
-library(fastDummies)
+library(OaxacaSurvey) # latest version of this package
+library(fastDummies) # to transform multi-level categories into dummies
+
+library(data.table) # optional, for data import and handling
+library(magrittr) # optional, for piping with %>%
 
 
 # Import dataset with multilevel categorical data from a s
@@ -23,7 +25,7 @@ total_variables <- c(
   "tipo_auton", "direc", "multipr", "useprop", "inherit"
 )
 selected_variables <- c(
-   "renthog", "bage", "sex", "homeowner", "riquezafin"
+  "renthog", "bage", "sex", "homeowner", "riquezafin"
 )
 
 ####################################################################################
@@ -33,7 +35,7 @@ data <- df[, ..selected_variables]
 
 # transform multi-level categories to dummies. IMPORTANT remove both first dummy and selected column to get OB decomposition!
 data <- fastDummies::dummy_cols(data,
-  select_columns = c( "bage", "sex", "homeowner", "riquezafin"),
+  select_columns = c("bage", "sex", "homeowner", "riquezafin"),
   remove_first_dummy = TRUE,
   remove_selected_columns = TRUE
 )
@@ -47,11 +49,16 @@ new_formula <- paste("y ~", paste0("x", 1:length_reg, collapse = " + "))
 data <- cbind(y = df$rentsbi, group = df$group, weights = df$facine3, data)
 
 # finally, test the model
-result2 <- oaxaca_blinder_svy(
+result <- oaxaca_blinder_svy(
   as.formula(new_formula),
   data = data.frame(data),
   group = "group",
   weights = "weights",
   R = 1000
 )
-print(result2)
+
+# Return Oaxaca-Blinder decomposition with bootestraped CI
+result %>% print()
+
+# plot the Oaxaca-Blinder decomposition in bars
+result["value", ][1:4] %>% as.matrix() %>% barplot()

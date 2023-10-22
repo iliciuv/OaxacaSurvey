@@ -1,8 +1,7 @@
 # Example usage of OaxacaSurvey
 
 # Load required packages
-library(survey) # depends on for svyglm and survey designs
-library(boot) # depends on for bootstraping CI
+
 library(OaxacaSurvey) # latest version of this package
 
 library(data.table) # optional, for data import and handling
@@ -35,5 +34,7 @@ result <- oaxaca_blinder_svy(
 )
 
 # Return Oaxaca-Blinder decomposition with bootestraped CI
-
 result %>% print()
+
+# plot the Oaxaca-Blinder decomposition in bars
+result["value", ][1:4] %>% as.matrix() %>% barplot()
