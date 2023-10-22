@@ -2,7 +2,7 @@
 `%>%` <- magrittr::`%>%` # nolint
 options(scipen = 99)
 rif_var <- "quantile"
-c("survey", "data.table", "boot", "dineq") %>% sapply(library, character.only = T)
+c("survey", "data.table", "boot", "dineq") %>% sapply(library, character.only = TRUE)
 
 
 oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.level = 0.95) {
@@ -65,8 +65,8 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
 
   # Compute Confidence Intervals
   alpha <- 1 - conf.level
-  ci.lower <- apply(boot.result$t, 2, function(x) quantile(x, alpha / 2, na.rm = T))
-  ci.upper <- apply(boot.result$t, 2, function(x) quantile(x, 1 - alpha / 2, na.rm = T))
+  ci.lower <- apply(boot.result$t, 2, function(x) quantile(x, alpha / 2, na.rm = TRUE))
+  ci.upper <- apply(boot.result$t, 2, function(x) quantile(x, 1 - alpha / 2, na.rm = TRUE))
 
   # Return results as a list
   result <- data.frame(
@@ -93,14 +93,13 @@ df$bage <- relevel(as.factor(df$bage), ref = "0-34")
 df$inherit <- relevel(as.factor(df$inherit), ref = "Non-inherit")
 df$homeowner <- relevel(as.factor(df$homeowner), ref = "Non-Owner")
 df$riquezafin <- factor(as.logical(df$riquezafin), levels = c(T, F), labels = c("Fin", "NonFin"))
-df[, rif_rents := rif(rents)]
 total_variables <- c(
   "facine3", "renthog", "renthog1", "bage", "homeowner", "worker", "young", "sex", "class",
   "actreales", "riquezanet", "riquezafin", "educ", "auton", "class",
   "tipo_auton", "direc", "multipr", "useprop", "inherit"
 )
 
-formula <- rif_rents ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr
+formula <- rentsbi ~ bage + sex + educ + riquezafin + inherit + direc + homeowner + multipr
 df <- df[sv_year == 2020]
 
 
@@ -151,22 +150,22 @@ result <- oaxaca_blinder_svy(
 )
 result %>% print()
 selected_variables <- c(
-  "renthog", "riquezanet"
+  "renthog", "riquezanet", "bage", "sex", "educ", "renthog1", "inherit", "homeowner", "riquezafin"
 )
 
 # adaption to OaxacaSurvey function
 data <- df[, ..selected_variables]
+data <- fastDummies::dummy_cols(data,
+  select_columns = c("bage", "sex", "educ", "renthog1", "inherit", "homeowner", "riquezafin"),
+  remove_first_dummy = FALSE,
+  remove_selected_columns = TRUE
+)
 colnames(data) <- paste0("x", seq_along(colnames(data)))
-data <- cbind(y = df$rif_rents, group = df$group, weights = df$facine3, data)
-
-# Create the string
-length_reg <- length(colnames(data)) - 3
+length_reg <- length(colnames(data))
 new_formula <- paste("y ~", paste0("x", 1:length_reg, collapse = " + "))
+data <- cbind(y = df$rentsbi, group = df$group, weights = df$facine3, data)
 
-print(new_formula)
-head(data)
 
-model4 <- lm(as.formula(new_formula), data = data)
 
 result2 <- oaxaca_blinder_svy(
   as.formula(new_formula),
@@ -175,5 +174,4 @@ result2 <- oaxaca_blinder_svy(
   weights = "weights",
   R = 10
 )
-dt_dum <- fastDummies::dummy_cols(df, select_columns = c("homeowner"), remove_first_dummy = T, remove_selected_columns = T)
-dt_du2 <- fastDummies::dummy_cols(df, select_columns = c("class", "bage", "homeowner"), remove_selected_columns = T)
+print(result2)
