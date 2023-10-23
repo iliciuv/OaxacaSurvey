@@ -36,13 +36,13 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
   # Core function without bootstrapping
   oaxaca_blinder_core <- function(data, formula, group, weights) {
     exclude_cols <- c("y", "group", "weights")
-    exclude_cols <- c("y", "group", "weights")
     if (method == "logit") {
-      fam <- binomial(link = "logit")
+      fam <- quasibinomial(link = "logit")
     }
     if (method == "normal") {
-      fam <- quasi(link = "identity")
+      fam <- gaussian(link = "identity")
     }
+
     # Split 2 distinct control groups
     data1 <- data[data$group == 1, ]
     data2 <- data[data$group == 0, ]
@@ -62,12 +62,29 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
     means1_y <- weighted_means(des1, "y")
     means2_y <- weighted_means(des2, "y")
 
-    # Extract decomposition
-    endowments <- sum(coef(model2)[-1] * (means1 - means2))
-    coefficients <- sum((coef(model1)[-1] - coef(model2)[-1]) * means2)
-    interaction <- sum((coef(model1)[-1] - coef(model2)[-1]) * (means1 - means2))
-    unexplained <- unname(coef(model1)[1] - coef(model2)[1])
-    total <- endowments + coefficients + interaction + unexplained
+    # Calculate predicted probabilities for logistic regression
+    predicted_prob <- function(coef, means) {
+      exp(sum(coef * c(1, means))) / (1 + exp(sum(coef * c(1, means))))
+    }
+
+    if (method == "logit") {
+      # Extract decomposition (as originally done for the "normal" method)
+      endowments <- predicted_prob(coef(model2), means1) - predicted_prob(coef(model2), means2)
+      coefficients <- predicted_prob(coef(model1), means2) - predicted_prob(coef(model2), means2)
+      interaction <- predicted_prob(coef(model1), means1 - means2) - predicted_prob(coef(model2), means1 - means2)
+      unexplained <- 0
+
+      # Total difference
+      total <- endowments + coefficients + interaction + unexplained
+    }
+    if (method == "normal") {
+      # Extract decomposition
+      endowments <- sum(coef(model2)[-1] * (means1 - means2))
+      coefficients <- sum((coef(model1)[-1] - coef(model2)[-1]) * means2)
+      interaction <- sum((coef(model1)[-1] - coef(model2)[-1]) * (means1 - means2))
+      unexplained <- unname(coef(model1)[1] - coef(model2)[1])
+      total <- endowments + coefficients + interaction + unexplained
+    }
 
     # Return decomposition
     return(
