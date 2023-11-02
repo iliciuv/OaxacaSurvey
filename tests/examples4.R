@@ -110,6 +110,21 @@ result3 <- oaxaca(
   },
   group.weights = 0
 )
-coefficients <- result3$threefold$overall[c(1,3,5)]
-print(c(coefficients, sum = sum(coefficients), result3$y))
+coefficients <- result3$threefold$overall[c(1,3,5)] %>% unlist()
+c(data.table(coefficients), sum = sum(coefficients), result3$y) %>% print()
 print(result3$y)
+
+
+
+result4 <- oaxaca(
+  formula = rentsbi ~ renthog + bage + sex + riquezafin + actreales | group,
+  data = df,
+  R = 1,
+  reg.fun = function(formula, data, ...) {
+    glm(formula, data = data, family = binomial())
+  },
+  group.weights = 0
+)
+coefficients <- result4$threefold$overall[c(1,3,5)] %>% unlist()
+c(data.table(coefficients), sum = sum(coefficients), result4$y) %>% print()
+print(result4$y)
