@@ -67,7 +67,17 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
       exp(sum(coef * c(1, means))) / (1 + exp(sum(coef * c(1, means))))
     }
 
-    if (method == "logit") {
+
+    if (method == "normal" || method == "logit") {
+      # Extract decomposition (as originally done for the "normal" method)
+      endowments <- - sum(coef(model1)[-1] * (means1 - means2))
+      coefficients <- - sum((coef(model1)[-1] - coef(model2)[-1]) * means1) - unname(coef(model1)[1] - coef(model2)[1])
+      interaction <- sum((coef(model1)[-1] - coef(model2)[-1]) * (means1 - means2))
+      unexplained <- 0
+      total <- endowments + coefficients + interaction + unexplained
+    }
+
+    if (method == "logit_alt") {
       # Extract decomposition (as originally done for the "normal" method)
       endowments <- predicted_prob(coef(model2), means1) - predicted_prob(coef(model2), means2)
       coefficients <- predicted_prob(coef(model1), means2) - predicted_prob(coef(model2), means2)
@@ -77,15 +87,15 @@ oaxaca_blinder_svy <- function(formula, data, group, weights, R = 1000, conf.lev
       # Total difference
       total <- endowments + coefficients + interaction + unexplained
     }
-    if (method == "normal") {
-      # Extract decomposition
+
+    if (method == "normal_alt") {
+      # Extract decomposition (as originally done for the "normal" method)
       endowments <- sum(coef(model2)[-1] * (means1 - means2))
       coefficients <- sum((coef(model1)[-1] - coef(model2)[-1]) * means2)
       interaction <- sum((coef(model1)[-1] - coef(model2)[-1]) * (means1 - means2))
       unexplained <- unname(coef(model1)[1] - coef(model2)[1])
       total <- endowments + coefficients + interaction + unexplained
     }
-
     # Return decomposition
     return(
       c(
